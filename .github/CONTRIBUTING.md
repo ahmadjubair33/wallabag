@@ -6,11 +6,14 @@
 
 - Clone the repository
 - Ensure your Docker daemon is running
-- Launch `docker-compose up`
+- Launch `docker-compose exec --rm php composer install` to bootstrap php dependencies
+- Launch `docker-compose exec --rm php bin/console wallabag:console` to bootstrap your installation
+- Launch `docker-compose exec --rm php yarn install` to bootstrap dependencies for the frontend
+- Launch `docker-compose exec --rm php yarn build:dev` to build assets for the frontend
+- Launch `docker-compose up -d` to start the stack
 
 You'll then have:
-- a web server (nginx)
-- a PHP daemon (using FPM)
+- a PHP daemon with standalone web server
 - a Redis database (to handle imports)
 - a SQLite database to store articles
 

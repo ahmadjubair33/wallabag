@@ -1,8 +1,5 @@
-FROM php:8.0.16-fpm
+FROM php:8.0.16-fpm AS rootless
 
-# XXX Use UID/GID non-rootless docker containers
-ARG USER_UID=1000
-ARG USER_GID=1000
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_VERSION=14
 
@@ -69,12 +66,27 @@ RUN curl -L -o /usr/local/bin/envsubst https://github.com/a8m/envsubst/releases/
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-RUN usermod -u ${USER_UID} www-data
-
 COPY entrypoint.sh /entrypoint.sh
 COPY config/ /opt/wallabag/config/
 
-RUN mkdir -p /var/www/html/app/config/
+RUN mkdir -p \
+        /var/www/html/app/config/ \
+        /var/www/html/var/cache \
+        /var/www/html/web/assets \
+        /var/www/html/data
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php", "bin/console", "--env=dev", "server:run"]
+CMD ["php", "bin/console", "--env=dev", "server:run", "0.0.0.0:8000"]
+
+FROM rootless AS default
+
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+RUN groupmod -g 1000 www-data ; \
+    usermod -u ${USER_UID} -g www-data www-data ; \
+    touch /usr/local/etc/php/conf.d/wallabag-php.ini ; \
+    chown -R www-data: /var/www/html \
+        /usr/local/etc/php/conf.d/wallabag-php.ini
+
+USER www-data

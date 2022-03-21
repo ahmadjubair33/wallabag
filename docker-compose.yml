@@ -4,13 +4,18 @@ services:
     php:
         build:
             context: docker/php
+            # Use target 'rootless' if you run rootless Docker
+            target: default
         volumes:
             - .:/var/www/html
             # Volumes for data-related folders
             - assets:/var/www/html/web/assets
             - data:/var/www/html/data
-            - type: tmpfs
-              target: /var/www/html/var/cache
+            # Uncomment the following volume if you run rootless Docker
+            # A limitation blocks permissions on root docker, see
+            # https://github.com/moby/moby/issues/40881
+            # - type: tmpfs
+            #   target: /var/www/html/var/cache
             # Override third-party libraries for dev
             # - ../graby-site-config:/var/www/html/vendor/j0k3r/graby-site-config
             # - ../php-readability:/var/www/html/vendor/j0k3r/php-readability
@@ -26,6 +31,10 @@ services:
             # - ./docker/postgres/env
             # Uncomment to enable Xdebug
             # - ./docker/php/xdebug
+        ports:
+            - 8000:8000
+            # Uncomment to permit Xdebug remote session
+            - 9000:9000
         depends_on:
             # - mariadb
             # - postgres
