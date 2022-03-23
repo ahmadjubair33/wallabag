@@ -11,6 +11,7 @@ services:
             # Volumes for data-related folders
             - assets:/var/www/html/web/assets
             - data:/var/www/html/data
+            - cache:/var/www/.cache
             # Uncomment the following volume if you run rootless Docker
             # A limitation blocks permissions on root docker, see
             # https://github.com/moby/moby/issues/40881
@@ -34,7 +35,7 @@ services:
         ports:
             - 8000:8000
             # Uncomment to permit Xdebug remote session
-            - 9000:9000
+            # - 9000:9000
         depends_on:
             # - mariadb
             # - postgres
@@ -80,4 +81,6 @@ volumes:
     assets:
         driver: local
     data:
+        driver: local
+    cache:
         driver: local
