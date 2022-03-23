@@ -1,4 +1,4 @@
-FROM php:8.0.16-fpm AS rootless
+FROM php:8.0-fpm AS rootless
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_VERSION=14
